@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="unilife-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <rect width="512" height="512" rx="128" fill="url(#unilife-grad)"/>
+  
+  <!-- Graduation Cap / Book Symbol -->
+  <g fill="#FFFFFF" transform="translate(64, 80) scale(0.75)">
+    <!-- Cap top -->
+    <path d="M256 32L32 144l224 112 224-112L256 32z"/>
+    <!-- Tassel -->
+    <path d="M448 160v128c0 16-16 32-32 32s-32-16-32-32V176l-32 16v96c0 53-72 96-160 96S32 341 32 288v-96l-32-16v128c0 16-16 32-32 32" opacity="0.3"/>
+    <path d="M128 256v64c0 40 57.3 72 128 72s128-32 128-72v-64l-128 64-128-64z"/>
+    <!-- Star of Excellence -->
+    <polygon points="256,430 270,470 312,470 278,495 291,535 256,510 221,535 234,495 200,470 242,470" fill="#F59E0B"/>
+  </g>
+</svg>

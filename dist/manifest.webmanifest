@@ -1,0 +1,66 @@
+{
+  "name": "UniLife Ethiopia - Student Life Organizer",
+  "short_name": "UniLife",
+  "description": "Your Entire Student Life, Organized in One Place. Completely free academic tools for Ethiopian university and college students.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#172554",
+  "orientation": "any",
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/student/dashboard",
+      "description": "View today's schedule and deadlines"
+    },
+    {
+      "name": "Timetable",
+      "url": "/student/timetable",
+      "description": "Check your weekly classes"
+    },
+    {
+      "name": "Assignments",
+      "url": "/student/assignments",
+      "description": "Track assignments and projects"
+    },
+    {
+      "name": "GPA Calculator",
+      "url": "/student/gpa",
+      "description": "Calculate semester GPA & CGPA"
+    }
+  ]
+}
