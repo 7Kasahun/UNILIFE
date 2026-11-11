@@ -28,6 +28,34 @@
   </head>
   <body class="bg-brand-bg text-brand-text font-sans antialiased min-h-screen selection:bg-brand-lightBlue selection:text-brand-blue">
     <div id="root"></div>
+
+    <script>
+      // Display guidance notice only if opened directly from local disk (file://) instead of a web server
+      if (window.location.protocol === 'file:') {
+        document.getElementById('root').innerHTML = `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 620px; margin: 60px auto; padding: 36px 32px; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e2e8f0;">
+            <div style="font-size: 54px; margin-bottom: 16px;">🎓</div>
+            <h1 style="color: #172554; font-size: 26px; font-weight: 700; margin: 0 0 12px 0;">UniLife Ethiopia</h1>
+            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+              You opened <strong>index.html</strong> directly from Windows File Explorer (<code>file://</code>).<br>
+              Modern React applications require an <strong>HTTP Web Server</strong> to run.
+            </p>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; text-align: left; margin-bottom: 24px;">
+              <p style="margin: 0 0 10px 0; font-weight: 600; color: #1e293b; font-size: 15px;">🚀 How to view the working platform:</p>
+              <ul style="margin: 0; padding-left: 20px; color: #334155; font-size: 14px; line-height: 1.9;">
+                <li><strong>One-Click (Easiest):</strong> Double-click <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">START_APP.bat</code> in the project folder.</li>
+                <li><strong>Terminal:</strong> Run <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">npm start</code> and visit <strong>http://localhost:5000</strong></li>
+                <li><strong>Development:</strong> Run <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">npm run dev</code> and visit <strong>http://localhost:5173</strong></li>
+              </ul>
+            </div>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5; margin: 0;">
+              🌐 When uploaded to GitHub and hosted on a server (Render, Railway, Vercel, Netlify, or cPanel), it runs on HTTP/HTTPS automatically with zero setup!
+            </p>
+          </div>
+        `;
+      }
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
     <script>
       // Service worker registration
