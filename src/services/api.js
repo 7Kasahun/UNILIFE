@@ -1,3 +1,5 @@
+import { handleMockRequest } from './mockStorage.js';
+
 const API_BASE = '/api';
 
 function getStudentToken() {
@@ -9,6 +11,16 @@ function getAdminToken() {
 }
 
 export async function request(endpoint, options = {}, isAdmin = false) {
+  // If running on GitHub Pages or file:// protocol, immediately use the client-side storage engine
+  const isStaticHost = typeof window !== 'undefined' && (
+    window.location.hostname.includes('github.io') ||
+    window.location.protocol === 'file:'
+  );
+
+  if (isStaticHost) {
+    return handleMockRequest(endpoint, options, isAdmin);
+  }
+
   const token = isAdmin ? getAdminToken() : getStudentToken();
   const headers = {
     'Content-Type': 'application/json',
@@ -23,6 +35,12 @@ export async function request(endpoint, options = {}, isAdmin = false) {
       body: options.body ? JSON.stringify(options.body) : undefined
     });
 
+    // If server returned 404 or 405 (e.g. static hosting without API router), fall back to client storage
+    if (res.status === 404 || res.status === 405) {
+      console.warn(`[UniLife API] Route ${endpoint} returned ${res.status}. Falling back to client storage engine.`);
+      return handleMockRequest(endpoint, options, isAdmin);
+    }
+
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
@@ -34,12 +52,9 @@ export async function request(endpoint, options = {}, isAdmin = false) {
 
     return data;
   } catch (err) {
-    if (!navigator.onLine) {
-      const offlineError = new Error('You are currently offline. Please check your internet connection.');
-      offlineError.isOffline = true;
-      throw offlineError;
-    }
-    throw err;
+    // If backend is unreachable, gracefully fallback to client storage engine
+    console.warn(`[UniLife API] Fetch failed (${err.message}). Using client storage engine.`);
+    return handleMockRequest(endpoint, options, isAdmin);
   }
 }
 
