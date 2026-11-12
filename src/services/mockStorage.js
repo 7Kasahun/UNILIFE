@@ -4,23 +4,41 @@
  * and offline PWA mode without requiring a backend server.
  */
 
-// Initial Seed Universities
+// Initial Seed Universities & Colleges
 const SEED_UNIVERSITIES = [
   { id: 1, name: 'Addis Ababa University', short_name: 'AAU', city: 'Addis Ababa' },
-  { id: 2, name: 'Bahir Dar University', short_name: 'BDU', city: 'Bahir Dar' },
-  { id: 3, name: 'Hawassa University', short_name: 'HU', city: 'Hawassa' },
-  { id: 4, name: 'Jimma University', short_name: 'JU', city: 'Jimma' },
-  { id: 5, name: 'Mekelle University', short_name: 'MU', city: 'Mekelle' },
-  { id: 6, name: 'Arba Minch University', short_name: 'AMU', city: 'Arba Minch' },
-  { id: 7, name: 'University of Gondar', short_name: 'UoG', city: 'Gondar' },
-  { id: 8, name: 'Haramaya University', short_name: 'HU-ET', city: 'Haramaya' },
-  { id: 9, name: 'Adama Science and Technology University', short_name: 'ASTU', city: 'Adama' },
-  { id: 10, name: 'Addis Ababa Science and Technology University', short_name: 'AASTU', city: 'Addis Ababa' },
-  { id: 11, name: 'Wollo University', short_name: 'WU', city: 'Dessie' },
-  { id: 12, name: 'Dilla University', short_name: 'DU', city: 'Dilla' },
-  { id: 13, name: 'Debre Berhan University', short_name: 'DBU', city: 'Debre Berhan' },
-  { id: 14, name: 'Debre Markos University', short_name: 'DMU', city: 'Debre Markos' },
-  { id: 15, name: 'Wollega University', short_name: 'WU-ET', city: 'Nekemte' }
+  { id: 2, name: 'Addis Ababa Science and Technology University', short_name: 'AASTU', city: 'Addis Ababa' },
+  { id: 3, name: 'Adama Science and Technology University', short_name: 'ASTU', city: 'Adama' },
+  { id: 4, name: 'Admas University', short_name: 'AU', city: 'Addis Ababa' },
+  { id: 5, name: 'Alpha University College', short_name: 'AUC', city: 'Addis Ababa' },
+  { id: 6, name: 'American College of Technology (ACT)', short_name: 'ACT', city: 'Addis Ababa' },
+  { id: 7, name: 'Arba Minch University', short_name: 'AMU', city: 'Arba Minch' },
+  { id: 8, name: 'Bahir Dar University', short_name: 'BDU', city: 'Bahir Dar' },
+  { id: 9, name: 'BITS College', short_name: 'BITS', city: 'Addis Ababa' },
+  { id: 10, name: 'Closys College', short_name: 'Closys', city: 'Addis Ababa' },
+  { id: 11, name: 'Debre Berhan University', short_name: 'DBU', city: 'Debre Berhan' },
+  { id: 12, name: 'Debre Markos University', short_name: 'DMU', city: 'Debre Markos' },
+  { id: 13, name: 'Dilla University', short_name: 'DU', city: 'Dilla' },
+  { id: 14, name: 'Dynamic International University College', short_name: 'DIUC', city: 'Addis Ababa' },
+  { id: 15, name: 'Ethiopian Catholic University', short_name: 'ECU', city: 'Addis Ababa' },
+  { id: 16, name: 'Haramaya University', short_name: 'HU-ET', city: 'Haramaya' },
+  { id: 17, name: 'Hawassa University', short_name: 'HU', city: 'Hawassa' },
+  { id: 18, name: 'Hope University College', short_name: 'HUC', city: 'Addis Ababa' },
+  { id: 19, name: 'Infonet College', short_name: 'Infonet', city: 'Addis Ababa' },
+  { id: 20, name: 'International Leadership Institute', short_name: 'ILI', city: 'Addis Ababa' },
+  { id: 21, name: 'Jethro Leadership & Management Institute', short_name: 'JLMI', city: 'Addis Ababa' },
+  { id: 22, name: 'Jimma University', short_name: 'JU', city: 'Jimma' },
+  { id: 23, name: 'Kunuz College', short_name: 'Kunuz', city: 'Addis Ababa' },
+  { id: 24, name: 'Mekelle University', short_name: 'MU', city: 'Mekelle' },
+  { id: 25, name: 'New Generation University College', short_name: 'NGUC', city: 'Addis Ababa' },
+  { id: 26, name: 'Rift Valley University', short_name: 'RVU', city: 'Addis Ababa / Adama' },
+  { id: 27, name: 'Royal College/Ethiopia', short_name: 'Royal', city: 'Addis Ababa' },
+  { id: 28, name: 'Select College', short_name: 'Select', city: 'Addis Ababa' },
+  { id: 29, name: "St. Mary's University", short_name: 'SMU', city: 'Addis Ababa' },
+  { id: 30, name: 'Unity University', short_name: 'Unity', city: 'Addis Ababa' },
+  { id: 31, name: 'University of Gondar', short_name: 'UoG', city: 'Gondar' },
+  { id: 32, name: 'Wollega University', short_name: 'WU-ET', city: 'Nekemte' },
+  { id: 33, name: 'Wollo University', short_name: 'WU', city: 'Dessie' }
 ];
 
 // Initial Seed Departments

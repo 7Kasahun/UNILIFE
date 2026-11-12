@@ -14,11 +14,49 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
+const DEFAULT_UNIVERSITIES = [
+  'Addis Ababa University',
+  'Addis Ababa Science and Technology University (AASTU)',
+  'Adama Science and Technology University (ASTU)',
+  'Admas University',
+  'Alpha University College',
+  'American College of Technology (ACT)',
+  'Arba Minch University',
+  'Bahir Dar University',
+  'BITS College',
+  'Closys College',
+  'Debre Berhan University',
+  'Debre Markos University',
+  'Dilla University',
+  'Dynamic International University College',
+  'Ethiopian Catholic University',
+  'Haramaya University',
+  'Hawassa University',
+  'Hope University College',
+  'Infonet College',
+  'International Leadership Institute',
+  'Jethro Leadership & Management Institute',
+  'Jimma University',
+  'Kunuz College',
+  'Mekelle University',
+  'New Generation University College',
+  'Rift Valley University',
+  'Royal College/Ethiopia',
+  'Select College',
+  "St. Mary's University",
+  'Unity University',
+  'University of Gondar',
+  'Wollega University',
+  'Wollo University'
+];
+
 export default function RegisterPage() {
   const { loginStudent } = useAuth();
   const navigate = useNavigate();
 
-  const [universities, setUniversities] = useState([]);
+  const [universities, setUniversities] = useState(() => 
+    DEFAULT_UNIVERSITIES.map((name, i) => ({ id: i + 1, name }))
+  );
   const [departments, setDepartments] = useState([]);
 
   const [form, setForm] = useState({
