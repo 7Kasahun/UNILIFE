@@ -277,21 +277,86 @@ export async function handleMockRequest(endpoint, options = {}, isAdmin = false)
   // 3. STUDENT DASHBOARD & METRICS
   // ==========================================
   if (endpoint === '/student/dashboard') {
-    const courses = getEntityList('courses');
-    const assignments = getEntityList('assignments');
-    const exams = getEntityList('exams');
-    const study = getEntityList('study');
+    const user = getCurrentUser() || { full_name: 'Student' };
+    const courses = getEntityList('courses', []);
+    const assignments = getEntityList('assignments', []);
+    const exams = getEntityList('exams', []);
+    const study = getEntityList('study', []);
+    const timetable = getEntityList('timetable', []);
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const now = new Date();
+    const currentDay = daysOfWeek[now.getDay()];
+
+    const todaySchedule = timetable.filter(t => t.day_of_week === currentDay);
+
+    const enrichedAssignments = assignments.map(a => {
+      const diffMs = new Date(a.due_date || now) - now;
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return { ...a, days_remaining: diffDays };
+    });
+
+    const enrichedExams = exams.map(e => {
+      const diffMs = new Date(`${e.exam_date || now.toISOString().split('T')[0]}T${e.exam_time || '09:00:00'}`) - now;
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return { ...e, days_remaining: diffDays };
+    });
+
+    const weeklyStudyMinutes = study.reduce((sum, s) => sum + Number(s.duration_minutes || s.actual_minutes || (s.duration_hours ? s.duration_hours * 60 : 0) || 0), 0);
+    const weeklyStudyHours = Number((weeklyStudyMinutes / 60).toFixed(1));
+    const targetWeeklyHours = 15;
+    const studyGoalProgress = Math.min(100, Math.round((weeklyStudyHours / targetWeeklyHours) * 100));
+
+    const gpaRecords = getEntityList('gpa_records', []);
+    let currentGpa = '3.50';
+    if (gpaRecords.length > 0) {
+      let totalPts = 0;
+      let totalCr = 0;
+      for (const r of gpaRecords) {
+        const cr = Number(r.credit_hours || 3);
+        const pt = cr * Number(r.grade_point || 4);
+        totalCr += cr;
+        totalPts += pt;
+      }
+      if (totalCr > 0) currentGpa = (totalPts / totalCr).toFixed(2);
+    }
+
+    const announcements = getEntityList('admin_announcements', [
+      { id: 1, title: 'Exam Timetable Release - Semester I', content: 'Final examination schedules for all university faculties have been verified and announced.', priority: 'high', created_at: new Date().toISOString() }
+    ]);
+
+    const dashboardData = {
+      greeting: `Welcome back, ${user.full_name || user.username || 'Student'}`,
+      todayDate: now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+      currentDay,
+      summaryCards: {
+        totalCourses: courses.length,
+        upcomingAssignmentsCount: assignments.filter(a => a.status !== 'completed' && a.status !== 'Completed').length,
+        upcomingExamsCount: exams.length,
+        weeklyStudyHours,
+        targetWeeklyHours,
+        studyGoalProgress,
+        currentGpa
+      },
+      courses,
+      todaySchedule,
+      upcomingAssignments: enrichedAssignments,
+      upcomingExaminations: enrichedExams,
+      announcements
+    };
 
     return {
       success: true,
+      data: dashboardData,
       dashboard: {
         total_courses: courses.length,
+        courses,
         pending_assignments: assignments.filter(a => a.status !== 'completed').length,
         upcoming_exams: exams.length,
-        weekly_study_hours: 12.5,
-        study_goal_hours: 20,
-        upcoming_deadlines: assignments.slice(0, 3),
-        today_schedule: []
+        weekly_study_hours: weeklyStudyHours,
+        study_goal_hours: targetWeeklyHours,
+        upcoming_deadlines: enrichedAssignments.slice(0, 3),
+        today_schedule: todaySchedule
       }
     };
   }

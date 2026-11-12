@@ -31,7 +31,47 @@ export default function DashboardPage() {
       setLoading(true);
       const res = await api.getDashboardData();
       if (res.success) {
-        setData(res.data);
+        const payload = res.data || res.dashboard || {};
+        
+        // Ensure student courses are loaded
+        let studentCourses = payload.courses;
+        if (!studentCourses || !Array.isArray(studentCourses)) {
+          try {
+            const courseRes = await api.getCourses();
+            if (courseRes && courseRes.success && Array.isArray(courseRes.courses)) {
+              studentCourses = courseRes.courses;
+            }
+          } catch {
+            studentCourses = [];
+          }
+        }
+        if (!Array.isArray(studentCourses)) {
+          studentCourses = [];
+        }
+
+        const summary = payload.summaryCards || {
+          totalCourses: payload.total_courses ?? studentCourses.length,
+          upcomingAssignmentsCount: payload.pending_assignments ?? (payload.upcomingAssignments?.length || 0),
+          upcomingExamsCount: payload.upcoming_exams ?? (payload.upcomingExaminations?.length || 0),
+          weeklyStudyHours: payload.weekly_study_hours || 0,
+          targetWeeklyHours: payload.study_goal_hours || 15,
+          studyGoalProgress: payload.studyGoalProgress || 0,
+          currentGpa: payload.currentGpa || '0.00'
+        };
+
+        // Guarantee totalCourses matches registered course list
+        if (studentCourses.length > 0 && (!summary.totalCourses || summary.totalCourses === 0)) {
+          summary.totalCourses = studentCourses.length;
+        }
+
+        setData({
+          ...payload,
+          summaryCards: summary,
+          courses: studentCourses,
+          greeting: payload.greeting || 'Welcome back',
+          todayDate: payload.todayDate || new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          currentDay: payload.currentDay || ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
+        });
       }
     } catch (err) {
       setError(err.message || 'Failed to load dashboard data.');
@@ -76,6 +116,7 @@ export default function DashboardPage() {
     todayDate,
     currentDay,
     summaryCards,
+    courses = [],
     todaySchedule = [],
     upcomingAssignments = [],
     upcomingExaminations = [],
@@ -141,7 +182,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatCard
           title="Total Courses"
-          value={summaryCards?.totalCourses || 0}
+          value={summaryCards?.totalCourses ?? courses.length ?? 0}
           icon={BookOpen}
           color="blue"
         />
@@ -173,10 +214,81 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Main Grid: Today's Schedule + Upcoming Deadlines */}
+      {/* Main Grid: Registered Courses, Schedule & Upcoming Tasks */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (7 cols): Today's Classes & Upcoming Deadlines */}
+        {/* Left Column (7 cols): Registered Courses, Today's Classes & Upcoming Deadlines */}
         <div className="lg:col-span-7 space-y-6">
+          {/* Registered Courses Section */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-blue-50 text-brand-blue rounded-xl">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-navy-800">My Registered Courses</h3>
+                  <p className="text-[11px] text-slate-400">
+                    {courses.length} {courses.length === 1 ? 'course' : 'courses'} enrolled
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/student/courses"
+                className="text-xs text-brand-blue font-semibold hover:underline flex items-center gap-1"
+              >
+                <span>View All Courses</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {courses.length === 0 ? (
+              <div className="p-6 bg-slate-50/70 rounded-xl text-center border border-dashed border-slate-200">
+                <p className="text-xs text-slate-500 font-medium">No courses registered yet.</p>
+                <p className="text-[11px] text-slate-400 mt-1">Add your academic courses to organize assignments, schedules, and exams.</p>
+                <Link
+                  to="/student/courses"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-blue text-xs font-semibold text-white hover:bg-blue-700 shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Register First Course</span>
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {courses.map((course) => (
+                  <Link
+                    key={course.id}
+                    to={`/student/courses/${course.id}`}
+                    className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-blue-50/40 hover:border-blue-200 transition-all flex items-start gap-3 group"
+                  >
+                    <div
+                      className="w-2.5 h-10 rounded-full flex-shrink-0 mt-0.5"
+                      style={{ backgroundColor: course.color || '#2563EB' }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-brand-blue">
+                          {course.course_code}
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-400">
+                          {course.credit_hours} Cr.
+                        </span>
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-900 truncate mt-1 group-hover:text-brand-blue transition-colors">
+                        {course.course_name}
+                      </h4>
+                      {course.instructor && (
+                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                          {course.instructor}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Today's Schedule Section */}
           <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">

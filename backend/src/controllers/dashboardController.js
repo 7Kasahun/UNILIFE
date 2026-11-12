@@ -7,6 +7,7 @@ export async function getDashboardData(req, res) {
     // 1. Total Courses
     const courseCountRes = await getOne('SELECT COUNT(*) as total FROM courses WHERE user_id = ?', [userId]);
     const totalCourses = (courseCountRes && courseCountRes.total) || 0;
+    const courses = await query('SELECT * FROM courses WHERE user_id = ? ORDER BY course_code ASC', [userId]);
 
     // 2. Upcoming Assignments
     const nowIso = new Date().toISOString();
@@ -126,6 +127,7 @@ export async function getDashboardData(req, res) {
           studyGoalProgress,
           currentGpa
         },
+        courses,
         todaySchedule: todayClasses,
         upcomingAssignments: enrichedAssignments,
         upcomingExaminations: enrichedExams,
