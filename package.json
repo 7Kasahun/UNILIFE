@@ -8,7 +8,7 @@
     "dev": "vite",
     "dev:server": "node --watch backend/src/server.js",
     "dev:all": "concurrently \"npm run dev:server\" \"npm run dev\"",
-    "build": "vite build",
+    "build": "node scripts/build.js",
     "preview": "vite preview",
     "start": "node backend/src/server.js",
     "setup-admin": "node backend/src/scripts/setup-admin.js",

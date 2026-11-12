@@ -43,15 +43,27 @@ const SEED_DEPARTMENTS = [
   { id: 16, name: 'Biomedical Science', faculty: 'Natural Sciences' }
 ];
 
+// Helper to parse JSON safely
+function safeJsonParse(val, fallback = null) {
+  if (!val) return fallback;
+  if (typeof val === 'object') return val;
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return fallback;
+  }
+}
+
 // Helper to get current stored user
 function getCurrentUser() {
   const raw = localStorage.getItem('unilife_student');
-  return raw ? JSON.parse(raw) : null;
+  return safeJsonParse(raw, null);
 }
 
 function getStoredUsers() {
   const raw = localStorage.getItem('unilife_mock_users');
-  if (raw) return JSON.parse(raw);
+  const parsed = safeJsonParse(raw, null);
+  if (parsed && Array.isArray(parsed)) return parsed;
   
   // Default pre-seeded demo student
   const defaultUser = {
@@ -79,7 +91,8 @@ function getEntityList(key, defaultData = []) {
   const user = getCurrentUser();
   const userId = user?.id || 'guest';
   const raw = localStorage.getItem(`unilife_mock_${key}_${userId}`);
-  if (raw) return JSON.parse(raw);
+  const parsed = safeJsonParse(raw, null);
+  if (parsed && Array.isArray(parsed)) return parsed;
   localStorage.setItem(`unilife_mock_${key}_${userId}`, JSON.stringify(defaultData));
   return defaultData;
 }
@@ -93,7 +106,7 @@ function saveEntityList(key, list) {
 // Main handler
 export async function handleMockRequest(endpoint, options = {}, isAdmin = false) {
   const method = (options.method || 'GET').toUpperCase();
-  const body = options.body ? JSON.parse(options.body) : {};
+  const body = safeJsonParse(options.body, {});
 
   // Artificial slight delay to simulate natural responsiveness
   await new Promise(r => setTimeout(r, 60));
