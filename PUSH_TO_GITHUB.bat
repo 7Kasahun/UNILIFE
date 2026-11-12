@@ -5,6 +5,8 @@ echo ======================================================
 echo Pushing latest UNILIFE fixes to GitHub...
 echo ======================================================
 echo.
+"C:\Users\hp\AppData\Local\GitHubDesktop\app-3.6.11\resources\app\git\cmd\git.exe" add -A
+"C:\Users\hp\AppData\Local\GitHubDesktop\app-3.6.11\resources\app\git\cmd\git.exe" commit -m "fix(github-pages): bundle client storage engine and remove duplicate action workflow" >nul 2>&1
 "C:\Users\hp\AppData\Local\GitHubDesktop\app-3.6.11\resources\app\git\cmd\git.exe" push origin main
 echo.
 if %ERRORLEVEL% EQU 0 (
