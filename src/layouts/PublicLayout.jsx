@@ -91,7 +91,6 @@ export default function PublicLayout() {
             <Link to="/terms" className="hover:text-navy-800">Terms of Service</Link>
             <Link to="/privacy" className="hover:text-navy-800">Privacy Policy</Link>
             <Link to="/contact" className="hover:text-navy-800">Contact</Link>
-            <Link to="/admin/login" className="text-slate-400 hover:text-slate-600">Admin</Link>
           </div>
         </div>
         <p className="text-center text-[11px] text-slate-400 mt-4">

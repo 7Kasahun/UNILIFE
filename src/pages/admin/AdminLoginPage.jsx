@@ -116,17 +116,8 @@ export default function AdminLoginPage() {
           </div>
         </div>
 
-        <div className="p-3.5 bg-slate-800/80 rounded-2xl border border-slate-700/60 text-center text-xs text-slate-300 space-y-2">
-          <p className="font-semibold text-slate-200">
-            Demo Credentials: <span className="text-blue-400">admin@unilife.et</span> / <span className="text-blue-400">Admin@UniLife2026</span>
-          </p>
-          <button
-            type="button"
-            onClick={() => { setIdentifier('admin@unilife.et'); setPassword('Admin@UniLife2026'); }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-semibold transition-all active:scale-95"
-          >
-            ⚡ Auto-Fill Demo Admin Credentials
-          </button>
+        <div className="p-3 bg-slate-800/50 rounded-2xl border border-slate-700/50 text-center text-[11px] text-slate-500">
+          Restricted Administrator Access. Authorized personnel only.
         </div>
       </div>
     </div>

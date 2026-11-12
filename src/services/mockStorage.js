@@ -512,19 +512,18 @@ export async function handleMockRequest(endpoint, options = {}, isAdmin = false)
   // 10. ADMINISTRATOR AUTH & PORTAL
   // ==========================================
   if (endpoint === '/admin/auth/login' && method === 'POST') {
-    const ident = (body.login_identifier || body.username || body.email || '').trim().toLowerCase();
+    const ident = (body.login_identifier || body.username || body.email || '').trim();
     const pass = (body.password || '').trim();
 
-    const validPasswords = ['admin@unilife2026', 'admin', 'admin123', 'admin@123', 'admin2026', 'password', '12345678'];
-    const isPassValid = pass === 'Admin@UniLife2026' || validPasswords.includes(pass.toLowerCase()) || pass.length >= 4;
+    // Administrator credentials requirement: Username Admin@UniLife2026, Password saoladmin@Unilife
+    const isUserValid = ident.toLowerCase() === 'admin@unilife2026' || ident === 'Admin@UniLife2026' || ident.toLowerCase() === 'admin';
+    const isPassValid = pass === 'saoladmin@Unilife';
 
-    const isAdminIdent = !ident || ident === 'admin' || ident === 'admin@unilife.et' || ident.includes('admin') || ident.includes('7kasahun');
-
-    if (isAdminIdent && isPassValid) {
+    if (isUserValid && isPassValid) {
       const admin = {
         id: 1,
-        full_name: 'UniLife Super Admin',
-        username: 'admin',
+        full_name: 'UniLife Administrator',
+        username: 'Admin@UniLife2026',
         email: 'admin@unilife.et',
         role: 'superadmin'
       };
@@ -535,7 +534,7 @@ export async function handleMockRequest(endpoint, options = {}, isAdmin = false)
         admin
       };
     }
-    const error = new Error('Invalid administrator credentials. Demo password: Admin@UniLife2026');
+    const error = new Error('Invalid administrator credentials.');
     error.status = 401;
     throw error;
   }
@@ -545,8 +544,8 @@ export async function handleMockRequest(endpoint, options = {}, isAdmin = false)
       success: true,
       admin: {
         id: 1,
-        full_name: 'UniLife Super Admin',
-        username: 'admin',
+        full_name: 'UniLife Administrator',
+        username: 'Admin@UniLife2026',
         email: 'admin@unilife.et',
         role: 'superadmin'
       }
@@ -555,21 +554,55 @@ export async function handleMockRequest(endpoint, options = {}, isAdmin = false)
 
   if (endpoint.startsWith('/admin/analytics')) {
     const users = getStoredUsers();
+
+    // Group users by university
+    const uniMap = {};
+    users.forEach(u => {
+      const uni = u.university || 'Addis Ababa University';
+      uniMap[uni] = (uniMap[uni] || 0) + 1;
+    });
+    const universityDistribution = Object.entries(uniMap).map(([university, student_count]) => ({
+      university,
+      student_count
+    }));
+
+    // Today's registrations
+    const todayStr = new Date().toISOString().split('T')[0];
+    const newRegsToday = users.filter(u => (u.created_at || '').startsWith(todayStr)).length;
+
+    // Donations
+    const donations = getEntityList('admin_donations', [
+      { id: 1, donor_name: 'Kassahun A.', amount: 500, payment_method: 'Telebirr', reference_number: 'TXN9382103', status: 'verified', created_at: new Date(Date.now() - 86400000).toISOString() },
+      { id: 2, donor_name: 'Anonymous Student', amount: 100, payment_method: 'CBE Birr', reference_number: 'CBE849102', status: 'pending', created_at: new Date().toISOString() }
+    ]);
+    const verifiedDons = donations.filter(d => d.status === 'verified');
+    const totalVerifiedDonations = verifiedDons.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+    const pendingDonations = donations.filter(d => d.status === 'pending');
+
     return {
       success: true,
-      analytics: {
-        total_students: Math.max(users.length, 36),
-        active_30_days: Math.max(users.length, 28),
-        total_donations_collected: 14250,
-        pending_donations: 2,
-        courses_managed: 48,
-        study_hours_logged: 312,
-        university_breakdown: [
-          { name: 'Addis Ababa University', count: 18 },
-          { name: 'Bahir Dar University', count: 12 },
-          { name: 'Hawassa University', count: 8 },
-          { name: 'Jimma University', count: 7 }
-        ]
+      summary: {
+        totalStudents: users.length,
+        activeStudents: users.length,
+        newRegsToday: newRegsToday,
+        newRegsThisWeek: users.length,
+        totalVerifiedDonations: totalVerifiedDonations,
+        verifiedDonationCount: verifiedDons.length,
+        pendingDonationsCount: pendingDonations.length
+      },
+      charts: {
+        featureUsage: [
+          { feature: 'Courses', count: users.length * 3 },
+          { feature: 'Timetable', count: users.length * 4 },
+          { feature: 'Assignments', count: users.length * 2 },
+          { feature: 'Exams', count: users.length },
+          { feature: 'GPA Records', count: users.length * 3 },
+          { feature: 'Study Sessions', count: users.length * 2 }
+        ],
+        registrationTrends: [
+          { date: todayStr, count: newRegsToday }
+        ],
+        universityDistribution
       }
     };
   }
@@ -588,7 +621,14 @@ export async function handleMockRequest(endpoint, options = {}, isAdmin = false)
       saveStoredUsers(users);
       return { success: true, message: 'Student account deleted' };
     }
-    return { success: true, students: users };
+    return {
+      success: true,
+      students: users,
+      pagination: {
+        total: users.length,
+        totalPages: 1
+      }
+    };
   }
 
   if (endpoint.startsWith('/admin/donations')) {
